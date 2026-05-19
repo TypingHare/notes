@@ -1,0 +1,58 @@
+\subsection{Group Relative Policy Optimization}
+
+\textbf{Group Relative Policy Optimization (GRPO)} replaces PPO value critic by ``how good was this answer compared with the other answers sampled for the same prompt?''~\cite{shao2024deepseekmath}.
+
+For each prompt \(x\), instead of sampling one answer, GRPO samples a group:
+\[
+	\{ y_1, y_2, \dots, y_G \} \sim \pi_\text{ref}(\cdot | x).
+\]
+
+Then, each output gets a reward from a reward function \(R\):
+\begin{equation}
+	r_i = R(x, y_i).
+\end{equation}
+
+The advantage is the normalized reward:
+\begin{equation}
+	\hat{A}_{i, t} = \tilde{r}_i = \frac{r_i - \bar{r}}{\sigma_r},
+\end{equation}
+where \(\bar{r}\) and \(\sigma_r\) are the mean and standard deviation of the rewards in the group.
+
+The GRPO objective is:
+\begin{equation}
+	J_\text{GRPO}(\theta) = \mathbb{E} \left[
+		\frac{1}{G} \sum_{i = 1}^G J_\text{PPO}(\theta)
+		\right],
+\end{equation}
+where
+\begin{equation}
+	J_\text{PPO}(\theta) = \frac{1}{|y_i|} \sum_{t = 1}^{|y_i|} \left\{
+	\min \left(
+	\rho_{i,t}\hat{A}_{i,t}, \text{clip}(\rho_{i,t}, 1 - \epsilon, 1 + \epsilon) \hat{A}_{i,t}
+	\right) - \beta D_\text{KL} \left( \pi_\theta \| \pi_\text{ref} \right)
+	\right\}.
+\end{equation}
+
+Here, \(\rho_{i,t}\) is the probability ratio for token \(t\) in sampled output \(i\):
+\begin{equation}
+	\rho_{i, t} = \frac{
+		\pi_\theta(y_{i, t} | x, y_{i, < t})
+	}{
+		\pi_\text{ref}(y_{i, t} | x, y_{i, < t})
+	}.
+\end{equation}
+
+It compares new policy probability and old policy probability for the exact token that was sampled earlier.
+
+Advantages of GRPO over PPO:
+\UnorderListBegin
+\ListItem{
+	\textbf{No value critic needed}: PPO usually trains a separate value model \(V_\psi\). GRPO removes it and uses the group’s reward statistics instead.
+}
+\ListItem{
+	\textbf{Simpler advantage estimation}: PPO's baseline comes from a learned value model, while GRPO's baseline comes from other sampled answers.
+}
+\ListItem{
+	\textbf{Better fit for LLM reasoning tasks}: reasoning tasks often only have final-answer rewards. GRPO compares complete answers directly instead of trying to learn token-level values for every partial prefix.
+}
+\UnorderListEnd

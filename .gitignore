@@ -1,0 +1,15 @@
+# macOS system files
+.DS_Store
+
+# latexmk
+indent.log
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.pdf
+*.synctex.gz
+*.out
+*.bbl
+*.blg
+*(busy)

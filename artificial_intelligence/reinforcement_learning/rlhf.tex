@@ -1,0 +1,58 @@
+\subsection{Reinforcement Learning with Human Feedback}
+\label{sec:rlhf}
+
+\textbf{Reinforcement Learning with Human Feedback (RLHF)} replaces or supplements the environment reward with a learned model trained from human preferences~\cite{christiano2017deep}.
+
+Humans can annotate an AI response by giving it a score that represents how good or bad the response is. We want to fine-tune a large language model (LLM) so that the model tends to generate responses with higher scores while decreasing the chance of generating responses with lower scores. However, having humans annotate AI responses can be inefficient. To address this, we can train a model to annotate responses based on human preferences.
+
+First, we collect some high-quality \textbf{deomnstrations}, which are example answers written by human given a prompt \(x\). Then, for every prompt-response pair \((x, y)\), fine-tune a pre-trained language model with standard next-token prediction:
+\begin{equation}
+	\mathcal{L}_{\text{SFT}}(\theta) = -\mathbb{E} \left[ \sum_{t = 1}^{T}{ \log \pi_\theta (y_t | x, y_{<t}) } \right].
+\end{equation}
+
+This gives you a helpful initial policy (i.e., the fine-tuned model) \(\pi_{\text{SFT}}\), which should generate responses with similar style to the demonstrattions.
+
+Next, we collect human preference data. For the same prompt \(x\), sample two responses from the fine-tuned LLM:
+\[
+	y_a \sim \pi_{\text{SFT}}(\cdot | x) \quad \text{and} \quad
+	y_b \sim \pi_{\text{SFT}}(\cdot | x).
+\]
+
+A human annotator chooses a better response from \(y_a\) and \(y_b\). Let \(y_w\) and \(y_l\) denote the preferred response and less preferred response, respectively. A reward model \(r_\phi(x, y)\) maps a prompt-response pair \((x, y)\) to a scalar reward. A common preference modelling loss in the \textbf{Bradley-Terry / logistic loss}:
+\begin{equation}
+	L_{RM}(\phi) = - \mathbb{E} \left[ \log \sigma(\Delta r_\phi) \right],
+\end{equation}
+
+where
+\begin{equation}
+	\Delta r_\phi = r_\phi(x, y_w) - r_\phi(x, y_l).
+\end{equation}
+
+Because human prefers \(y_w\), it should be likely that \(\Delta r_\phi > 0\). The trained reward model should learn something like:
+\begin{align*}
+	 & r_\phi(\text{prompt, good answer}) = 4.2 \\
+	 & r_\phi(\text{prompt, bad answer}) = -1.3
+\end{align*}
+
+Now, we want to optimize the language model policy \(\pi_\theta\) to maximize reward from the reward model. A simple objective would be:
+\[
+	\max_{\theta} \mathbb{E}_{x, y \sim \pi_\theta(\cdot | x) } \left[ r_\phi(x, y) \right].
+\]
+
+In a nutshell, the pipeline of a classic LLM RLHF is
+\OrderListBegin
+\ListItem{
+	\textbf{Supervised fine-tuning}: Train the model on high-quality demonstrations.
+}
+\ListItem{
+	\textbf{Reward model training}: Train a reward model that learns which responses humans prefer.
+}
+\ListItem{
+	\textbf{RL optimization}: The language model is updated to produce responses that score highly under the reward model.
+}
+\OrderListEnd
+
+\vspace{1em}
+\begin{NoteBox}{Real-world Example of RLHF}
+	coming soon, stay tuned!
+\end{NoteBox}

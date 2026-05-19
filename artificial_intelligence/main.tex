@@ -1,0 +1,70 @@
+\documentclass[10pt]{article}
+
+% Layout
+\usepackage[letterpaper,margin = 1in]{geometry}
+\linespread{1}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0em}
+
+% Metadata
+\usepackage[
+  pdftitle={Artificial Intelligence Notes},
+  pdfauthor={James Chen},
+  pdfsubject={Artificial Intelligence},
+  pdfkeywords={artificial intelligence, deep learning, reinforcement learning}
+]{hyperref}
+
+% Page styles
+\setlength{\headheight}{3em}
+\setlength{\headsep}{1.5em}
+\usepackage{fancyhdr}
+\usepackage{fontawesome}
+\usepackage{lipsum}
+\pagestyle{fancy}
+\fancyhead[L]{Artificial Intelligence}
+\fancyhead[R]{\thepage}
+\fancyfoot{}
+
+% List commands
+\newcommand{\ListItem}[1]{ \item #1 \vspace{-0.75em} }
+\newcommand{\OrderListBegin}{ \begin{enumerate} \vspace{-1em} }
+\newcommand{\OrderListEnd}{\end{enumerate}}
+\newcommand{\UnorderListBegin}{ \begin{itemize} \vspace{-1em} }
+\newcommand{\UnorderListEnd}{ \end{itemize} }
+
+% Math packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{bm}
+
+% ---- Callout box
+\usepackage[most, minted]{tcolorbox}
+\tcbset{
+	enhanced,
+	boxrule=0pt,
+	left=10pt,right=10pt,top=8pt,bottom=8pt,
+}
+
+\definecolor{Primary}{HTML}{374151}
+\newcommand{\NoteIcon}{\faInfoCircle}
+\newtcolorbox{NoteBox}[1]{
+	colback=Primary!10,
+	colframe=Primary,
+	borderline west={4pt}{0pt}{Primary},
+	left=10pt,right=10pt,top=8pt,bottom=8pt,
+	before skip=10pt,
+	after skip=10pt,
+	fonttitle=\bfseries\color{Primary!80!black},
+	title={\NoteIcon\hspace{6pt} #1 \par \medskip},
+	attach title to upper
+}
+
+\begin{document}
+\input{reinforcement_learning/main.tex}
+
+% References
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}
