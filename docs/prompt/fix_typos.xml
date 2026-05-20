@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE xml>
+<command name="FixTypos">
+    <description>
+        Fix typos for the specific notes.
+    </description>
+    <input>
+        The name of the notes `N`.
+    </input>
+    <steps>
+        <step id="ScanFiles">
+            Scan all `.tex` files in the `N` directory from the project root directory.
+            For example, if the input is `artificial_intelligence`, then scan all the `.tex` files
+            recursively inside `/artificial_intelligence`, where `/` is the project root directory.
+        </step>
+        <step id="IdentifyTypos">
+            For each scanned file, find possible typos. This also includes verbs with incorrect
+            tense usage, nouns with incorrect pluralization, and other common spelling mistakes.
+        </step>
+        <step id="FixTypos">
+            For each identified typo, fix it by replacing it with the correct word or phrase.
+        </step>
+    </steps>
+    <output>
+        <item id="Findings">Findings of all possible typos.</item>
+    </output>
+</command>
