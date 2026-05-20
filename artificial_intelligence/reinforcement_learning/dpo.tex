@@ -2,7 +2,7 @@
 
 \textbf{Direct Preference Optimization (DPO)} is a method for aligning language models using preference data, like RLHF, but without training a separate reward model and without running PPO~\cite{rafailov2023direct}.
 
-We started with a normal language model. For a prompt \(x\), the model generates two answers, and humans choose a preferred one. Denote the chosen answer and the rejected answer as \(y^+\) and \(y^-\). Our goal is to fine-tune the model so that
+We start with a normal language model. For a prompt \(x\), the model generates two answers, and humans choose a preferred one. Denote the chosen answer and the rejected answer as \(y^+\) and \(y^-\). Our goal is to fine-tune the model so that
 \[
 	\pi_\theta (y^+ | x) > \pi_\theta (y^- | x),
 \]
@@ -17,18 +17,18 @@ For one preference pair \((x, y^+, y^-)\), DPO looks at the difference between t
 	\log\frac{\pi_\theta(y^-|x)}{\pi_\text{ref}(y^-|x)}
 \]
 
-This ratio tells if the model (1) increases the chosen answer and (2) decreases the rejected answer, relative to the reference model. The loss of DPO is
+This ratio tells whether the model (1) increases the chosen answer and (2) decreases the rejected answer, relative to the reference model. The loss of DPO is
 \begin{equation}
 	\mathcal{L}_\text{DPO} = - \log \sigma \left( \beta (\Delta r_\theta) \right).
 \end{equation}
 
-DPO is simpler and thus replaces PPO in many settings. It collects preference data and fine-tune directly on chosen-vs-rejected pairs.
+DPO is simpler and thus replaces PPO in many settings. It collects preference data and fine-tunes directly on chosen-vs-rejected pairs.
 
-The “proximal” in DPO mainly shows up in the actio acting like regularization. Suppose the model tries to make \(y^+\) insanely more likely than the reference model did, then
+The “proximal” in DPO mainly shows up through the objective acting like regularization. Suppose the model tries to make \(y^+\) insanely more likely than the reference model did, then
 \[
 	\log\frac{\pi_\theta(y^+|x)}{\pi_\text{ref}(y^+|x)}
 \]
-gets large. As a result, the sigmoid will saturate, and the training gain becomes small. From another perspective, DPO is not simply increasing \(\pi_\theta (y^+|x)\), its objective expects that
+gets large. As a result, the sigmoid will saturate, and the training gain becomes small. From another perspective, DPO is not simply increasing \(\pi_\theta (y^+|x)\); its objective expects that
 \[
 	\log\frac{\pi_\theta(y^+|x)}{\pi_\text{ref}(y^+|x)} \quad
 	\text{should be larger than} \quad

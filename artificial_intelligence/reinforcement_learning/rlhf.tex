@@ -5,12 +5,12 @@
 
 Humans can annotate an AI response by giving it a score that represents how good or bad the response is. We want to fine-tune a large language model (LLM) so that the model tends to generate responses with higher scores while decreasing the chance of generating responses with lower scores. However, having humans annotate AI responses can be inefficient. To address this, we can train a model to annotate responses based on human preferences.
 
-First, we collect some high-quality \textbf{deomnstrations}, which are example answers written by human given a prompt \(x\). Then, for every prompt-response pair \((x, y)\), fine-tune a pre-trained language model with standard next-token prediction:
+First, we collect some high-quality \textbf{demonstrations}, which are example answers written by humans given a prompt \(x\). Then, for every prompt-response pair \((x, y)\), fine-tune a pre-trained language model with standard next-token prediction:
 \begin{equation}
 	\mathcal{L}_{\text{SFT}}(\theta) = -\mathbb{E} \left[ \sum_{t = 1}^{T}{ \log \pi_\theta (y_t | x, y_{<t}) } \right].
 \end{equation}
 
-This gives you a helpful initial policy (i.e., the fine-tuned model) \(\pi_{\text{SFT}}\), which should generate responses with similar style to the demonstrattions.
+This gives you a helpful initial policy (i.e., the fine-tuned model) \(\pi_{\text{SFT}}\), which should generate responses in a style similar to the demonstrations.
 
 Next, we collect human preference data. For the same prompt \(x\), sample two responses from the fine-tuned LLM:
 \[
@@ -18,7 +18,7 @@ Next, we collect human preference data. For the same prompt \(x\), sample two re
 	y_b \sim \pi_{\text{SFT}}(\cdot | x).
 \]
 
-A human annotator chooses a better response from \(y_a\) and \(y_b\). Let \(y_w\) and \(y_l\) denote the preferred response and less preferred response, respectively. A reward model \(r_\phi(x, y)\) maps a prompt-response pair \((x, y)\) to a scalar reward. A common preference modelling loss in the \textbf{Bradley-Terry / logistic loss}:
+A human annotator chooses a better response from \(y_a\) and \(y_b\). Let \(y_w\) and \(y_l\) denote the preferred response and less preferred response, respectively. A reward model \(r_\phi(x, y)\) maps a prompt-response pair \((x, y)\) to a scalar reward. A common preference modeling loss is the \textbf{Bradley-Terry / logistic loss}:
 \begin{equation}
 	L_{RM}(\phi) = - \mathbb{E} \left[ \log \sigma(\Delta r_\phi) \right],
 \end{equation}
@@ -28,7 +28,7 @@ where
 	\Delta r_\phi = r_\phi(x, y_w) - r_\phi(x, y_l).
 \end{equation}
 
-Because human prefers \(y_w\), it should be likely that \(\Delta r_\phi > 0\). The trained reward model should learn something like:
+Because humans prefer \(y_w\), it should be likely that \(\Delta r_\phi > 0\). The trained reward model should learn something like:
 \begin{align*}
 	 & r_\phi(\text{prompt, good answer}) = 4.2 \\
 	 & r_\phi(\text{prompt, bad answer}) = -1.3
@@ -39,7 +39,7 @@ Now, we want to optimize the language model policy \(\pi_\theta\) to maximize re
 	\max_{\theta} \mathbb{E}_{x, y \sim \pi_\theta(\cdot | x) } \left[ r_\phi(x, y) \right].
 \]
 
-In a nutshell, the pipeline of a classic LLM RLHF is
+In a nutshell, the classic RLHF pipeline for LLMs is
 \OrderListBegin
 \ListItem{
 	\textbf{Supervised fine-tuning}: Train the model on high-quality demonstrations.
@@ -54,5 +54,11 @@ In a nutshell, the pipeline of a classic LLM RLHF is
 
 \vspace{1em}
 \begin{NoteBox}{Real-world Example of RLHF}
-	coming soon, stay tuned!
+	Imagine you are a literature major. In school, you are asked to read many classic and high-quality literary works, which serve as high-quality demonstrations. You learn from them and absorb them critically, cultivating your literary ability. This is similar to supervised fine-tuning.
+	\medskip
+
+	After you graduate, you start writing and publishing articles online. You receive feedback, or rewards, such as comments, views, and likes. Based on this feedback, you begin to understand the preferences of the public. This is similar to reward model training. After writing a new article, you are able to predict whether people will like it.
+	\medskip
+
+	Over time, you produce more and more popular articles by using your ability to tell which types of articles are likely to be liked by the public. This is similar to RL optimization.
 \end{NoteBox}

@@ -1,6 +1,6 @@
 \subsection{Proximal Policy Optimization}
 
-\textbf{Proximal Policy Optimization}, is a reinforcement learning algorithm that updates a policy while trying not to move it too far from the previous policy, which corresponds to the word ``proximal''~\cite{schulman2017proximal}.
+\textbf{Proximal Policy Optimization} is a reinforcement learning algorithm that updates a policy while trying not to move it too far from the previous policy, which corresponds to the word ``proximal''~\cite{schulman2017proximal}.
 
 The objective in RLHF (\ref{sec:rlhf}) may lead the model to exploit the reward model. For example, it might produce verbose, sycophantic, or weird responses that the reward model scores highly. In the \textbf{KL-penalty PPO}, we add a KL penalty to keep the new policy close to a reference model \(\pi_\text{ref}\):
 \[
@@ -11,7 +11,7 @@ The objective in RLHF (\ref{sec:rlhf}) may lead the model to exploit the reward 
 		\right],
 \]
 
-where \(\pi_\theta\) is the model being trained, \(\pi_\text{ref}\) is usually the original supervised-finetuned model. The KL penalty prevents the model from drifting too far and exploiting the reward model. Note that in some books, the reference model is also denoted by \(\pi_\text{old}\).
+where \(\pi_\theta\) is the model being trained, and \(\pi_\text{ref}\) is usually the original supervised fine-tuned model. The KL penalty prevents the model from drifting too far and exploiting the reward model. Note that in some books, the reference model is also denoted by \(\pi_\text{old}\).
 
 A more common version is \textbf{Clipped PPO}, where the loss function is
 \begin{equation}
@@ -43,9 +43,9 @@ The advantage estimate \(A_t\) tells whether action \(a_t\) was better or worse 
 	A_t = R_t - V_\psi(s_t),
 \end{equation}
 
-where \(R_t\) is the observed return from timestamp \(t\) and \(V_\psi(s_t)\) is the estimate of expected return from state \(s_t\) given by the \textbf{critic model} (also known as the \textbf{value model}).
+where \(R_t\) is the observed return from time step \(t\) and \(V_\psi(s_t)\) is the estimate of expected return from state \(s_t\) given by the \textbf{critic model} (also known as the \textbf{value model}).
 
-\subsubsection{Explanation of The Reward Ratio}
+\subsubsection{Explanation of the Reward Ratio}
 For a prompt \(x\), you sample an output \(y\). The token-level probability ratio is defined as
 \begin{equation}
 	\rho_t(\theta) =
@@ -56,6 +56,13 @@ The Clipped PPO objective is
 \begin{equation}
 	\mathcal{L}^{\text{CLIP}}(\theta) = \mathbb{E}
 	\left[
-		\frac{1}{|y|} \sum_{|y|}^{t = 1} \min \left( \rho_t A_t, \text{clip}(\rho_t, 1-\epsilon, 1 + \epsilon)A_t \right)
+		\frac{1}{|y|} \sum_{t = 1}^{|y|} \min \left( \rho_t A_t, \text{clip}(\rho_t, 1-\epsilon, 1 + \epsilon)A_t \right)
 		\right].
 \end{equation}
+
+\begin{NoteBox}{Real-world Example of PPO}
+	Suppose you write many articles and receive a lot of feedback. Most comments are friendly and positive, or they offer objective criticism, but some comments are just nasty and over the top. You read those toxic comments, feel miserable, and start thinking about giving up your career.
+	\medskip
+
+	But should you do that? No. Just because a few people do not like your work does not mean most people feel the same way. So you do not need to take those nasty comments too seriously. This is similar to the strategy used in PPO, where rewards are clipped to an acceptable range, preventing extreme rewards from dramatically affecting the model.
+\end{NoteBox}

@@ -1,0 +1,56 @@
+\subsection{Decoupled Clip and Dynamic sAmpling Policy Optimization}
+
+\textbf{Decoupled Clip and Dynamic sAmpling Policy Optimization (DAPO)} is GRPO (\ref{sec:grpo}) for long-CoT RLVR, with asymmetric clipping, useful-group filtering, token-level loss, and length-aware reward shaping~\cite{yu2026dapo}. \textbf{RLVR (Reinforcement Learning with Verifiable Rewards)} refers to rewards that can be objectively verified (e.g., whether the final answer of a problem is correct, whether generated code completes the required functions). Based on GRPO, DAPO introduces the following four modifications to improve performance on long-CoT RLVR tasks:
+
+\subsubsection{DAPO Change 1: Decoupled Clipping}
+
+In GRPO, the clip function is symmetric with a single \(\epsilon\):
+\[
+	\text{clip}(\rho_{i,t}, 1 - \epsilon, 1 + \epsilon).
+\]
+
+In DAPO, the clip function is asymmetric with two different values:
+\[
+	\text{clip}(\rho_{i,t}, 1 - \epsilon_\text{low}, 1 + \epsilon_\text{high}),
+\]
+where \(\epsilon_\text{high} > \epsilon_\text{low} \)
+
+For example, if \(\epsilon_\text{low} = 0.2\) and \(\epsilon_\text{high} = 0.28\), then the update range becomes \([0.8, 1.28]\). Across many tokens and many updates in long-CoT, this gives exploratory reasoning paths more room to grow. The reason for not increasing the lower bound \(\epsilon_\text{low}\) is that it could suppress probabilities too aggressively, potentially pushing some token probabilities toward zero and collapsing the sampling space.
+
+\subsubsection{DAPO Change 2: Dynamic Sampling}
+
+For one prompt, GRPO samples multiple answers and computes reward for each one. Then, it normalizes the rewards inside the group:
+\[
+	\hat{A}_{i} = \frac{r_i - \bar{r}}{\sigma_r}.
+\]
+
+However, some groups have rewards that are all ones, resulting in the advantage \(A_i\) becoming \(0\). A similar situation happens when all the rewards are \(0\). DAPO discards all the groups where the advantage equals \(0\).
+
+\subsubsection{DAPO Change 3: Token-level Policy-gradient Loss}
+
+In GRPO, you first average over that response's tokens:
+\[
+	\frac{1}{|y_i|} \sum_{t = 1}^{|y_i|}{ L_{i,t} },
+\]
+then average across responses:
+\[
+	\frac{1}{G}\sum_{i = 1}{G} \left( \frac{1}{|y_i|} \sum_{t = 1}^{|y_i|}{ L_{i,t} } \right).
+\]
+
+So every response gets equal weight regardless of the length of the response. However, tokens in shorter answers may contribute more than in longer answers. For instance, if both answers \(y_1\) and \(y_2\) are correct and receive a reward of 1, but \(|y_1| = 100\) and \(|y_2| = 1000\), then each token in \(y_1\) is weighted \(1/100 = 0.01\), while each token in \(y_2\) is weighted \(1/1000 = 0.001\).
+
+In long-CoT training, we often want to learn from long successful reasoning traces, as they may contain many useful reasoning tokens. Therefore, DAPO sums token losses across all responses, then divides by the total number of tokens in the group:
+\[
+	\frac{1}{\sum_{i=1}^{G}|y_i|} \sum_{i=1}^{G} \sum_{t=1}^{|y_i|} L_{i,t}.
+\]
+
+\subsubsection{DAPO Change 4: Overlong Reward Shaping}
+
+In long-CoT RL, the model may generate a long answer and the answer may be cut off before it reaches the final answer. In GRPO, these overlong answers will receive zero reward no matter what. However, for overlong answers, answers that slightly exceed the desired length are more acceptable than answers that are massively longer than the desired length. For this reason, DAPO adds a soft length penalty zone, where the longer the response is, the more penalty it receives.
+
+Let \(L_\text{max}\) denote the desired length, and \(B\) denote the soft penalty zone. If the length of the answer \(L \le L_\text{max}\), then there is no overlong penalty. If \(L_\text{max} < L \le L_\text{max} + B\), then apply a penalty
+\[
+	\text{penalty} \propto \frac{L - L_\text{max}}{B}.
+\]
+
+This matters for long-CoT training because if you punish length too aggressively, the model may avoid long reasoning, answer too quickly, or even skip important steps. But if you do not punish length at all, the model may keep thinking forever, repeat reasoning, or never finalize the answer.

@@ -1,6 +1,7 @@
 \subsection{Group Relative Policy Optimization}
+\label{sec:grpo}
 
-\textbf{Group Relative Policy Optimization (GRPO)} replaces PPO value critic by ``how good was this answer compared with the other answers sampled for the same prompt?''~\cite{shao2024deepseekmath}.
+\textbf{Group Relative Policy Optimization (GRPO)} replaces PPO's value critic with ``how good was this answer compared with the other answers sampled for the same prompt?''~\cite{shao2024deepseekmath}.
 
 For each prompt \(x\), instead of sampling one answer, GRPO samples a group:
 \[
@@ -42,7 +43,7 @@ Here, \(\rho_{i,t}\) is the probability ratio for token \(t\) in sampled output 
 	}.
 \end{equation}
 
-It compares new policy probability and old policy probability for the exact token that was sampled earlier.
+It compares the new policy probability with the old policy probability for the exact token that was sampled earlier.
 
 Advantages of GRPO over PPO:
 \UnorderListBegin
