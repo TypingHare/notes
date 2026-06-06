@@ -1,4 +1,4 @@
-# Learning Paths in Linux
+# Paths in Linux
 
 Have you ever encountered `FileNotFoundError` or similar errors and wondered how to address them? Have you been stuck in situations where the code doesn't work after being moved to another device? This post will cover everything you need to know about **paths in Linux**.
 
