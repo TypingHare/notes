@@ -1,7 +1,10 @@
+# Developer local files
+.local/
+
 # macOS system files
 .DS_Store
 
-# latexmk
+# Latexmk auxiliary files
 indent.log
 *.aux
 *.fdb_latexmk

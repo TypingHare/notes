@@ -156,7 +156,7 @@ $ export PATH="/my/path:$PATH"
 
 Here, a new string is created by concatenating `/my/path:` and the current value of `PATH`. This new value then replaces the original `PATH`. Many installation guides ask you to "add X to the PATH," where X is an absolute path. They are referring to this process.
 
-Each session has its own set of environment variables. This means if you set a variable in one session, it won't affect any other sessions. Additionally, if you close the terminal and reopen it, any changes to environment variables will be lost. To ensure that certain environment variables are set automatically every time you start a new session, add the `export` commands to your **profile configuration file** (or simply **profile file**). The profile file is another big topic. But for now, you just need to know this: if your shell interpreter is `bash`, then your profile file is `.bashrc`; if your shell interpreter is `zsh`, then your profile file is `.zshrc`.
+Each session has its own set of environment variables. This means if you set a variable in one session, it won't affect any other sessions. Additionally, if you close the terminal and reopen it, any changes to environment variables will be lost. To ensure that certain environment variables are set automatically every time you start a new session, add the `export` commands to your **shell configuration file**, which is another big topic. But for now, you just need to know this: if your shell interpreter is `bash`, then your shell configuration file is `.bashrc`; if your shell interpreter is `zsh`, then your shell configuration file is `.zshrc`. Use the `echo $SHELL` command to check which shell interpreter you are using.
 
 ## Paths to Executables
 
@@ -200,7 +200,7 @@ Then we manually resolve the relative paths in the Python script and check wheth
 
 ## Compiler/Interpreter Paths
 
-In addition to `PATH`, many compilers and interpreters rely on specific environment variables to locate related files. For instance, `g++` uses `CPATH` to find header files (e.g., `.hpp`) and `LIBRARY_PATH` to find compiled library files (e.g., `.a`, `.so`, `.dylib`). If you're using Homebrew to install C++ libraries, you’ll need to set these variables in your profile file:
+In addition to `PATH`, many compilers and interpreters rely on specific environment variables to locate related files. For instance, `g++` uses `CPATH` to find header files (e.g., `.hpp`) and `LIBRARY_PATH` to find compiled library files (e.g., `.a`, `.so`, `.dylib`). If you're using Homebrew to install C++ libraries, you’ll need to set these variables in your shell configuration file:
 
 ```bash
 export CPATH="$CPATH:/opt/homebrew/include"
@@ -281,7 +281,7 @@ Which of the following statements are correct? Select all that apply.
 &nbsp;&nbsp;&nbsp;&nbsp; c. There are three files or directories in `/home/bob/project/src`.
 &nbsp;&nbsp;&nbsp;&nbsp; d. The `cd main` command creates a `main` directory in `/home/bob/project/src`.
 
-7\. Alice adds the following command to her profile file `.bashrc`:
+7\. Alice adds the following command to her shell configuration file `.bashrc`:
 
 ```bash
 export PATH="$PATH:/home/alice/bin"
@@ -290,7 +290,7 @@ export PATH="$PATH:/home/alice/bin"
 She then checks with `echo $PATH` and finds that `/home/alice/bin` has been added to `PATH`. There is a `ls` executable in `/home/alice/bin`. However, when she runs `ls`, the `/home/alice/bin/ls` is not executed. Which of the following statements are correct? Select all that apply.
 
 &nbsp;&nbsp;&nbsp;&nbsp; a. She can check all `ls` executables in the environment using `which -a ls`.
-&nbsp;&nbsp;&nbsp;&nbsp; b. If she changes the `export` statement to `export PATH="/home/alice/bin:$PATH"` and moves it to the end of the profile file, `/home/alice/bin/ls` may be executed when she runs `ls`.
+&nbsp;&nbsp;&nbsp;&nbsp; b. If she changes the `export` statement to `export PATH="/home/alice/bin:$PATH"` and moves it to the end of the shell configuration file, `/home/alice/bin/ls` may be executed when she runs `ls`.
 &nbsp;&nbsp;&nbsp;&nbsp; c. `/home/alice/bin/ls` was not executed because she is in a wrong working directory.
 &nbsp;&nbsp;&nbsp;&nbsp; d. Because she is not using `bash` as a shell interpreter, adding the `export` statement to `.bashrc` doesn't take effect.
 
