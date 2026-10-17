@@ -1,0 +1,58 @@
+\documentclass[twocolumn,10pt]{article}
+
+% Layout
+\usepackage[letterpaper,margin = 1in]{geometry}
+\linespread{1}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0em}
+
+% Chinese
+\usepackage[UTF8]{ctex}
+
+% Metadata
+\usepackage[
+  pdftitle={Go Terms and Expressions},
+  pdfauthor={James Chen},
+  pdfsubject={Go Terms and Expressions},
+  pdfkeywords={Go}
+]{hyperref}
+
+% Page styles
+\setlength{\headheight}{3em}
+\setlength{\headsep}{1.5em}
+\usepackage{fancyhdr}
+\usepackage{lipsum}
+\pagestyle{fancy}
+\fancyhead[L]{Go Terms and Expressions}
+\fancyhead[R]{\thepage}
+\fancyfoot{}
+
+% List commands
+\newcommand{\ListItem}[1]{ \item #1 \vspace{-0.75em} }
+\newcommand{\OrderListBegin}{ \begin{enumerate} \vspace{-1em} }
+\newcommand{\OrderListEnd}{\end{enumerate}}
+\newcommand{\UnorderListBegin}{ \begin{itemize} \vspace{-1em} }
+\newcommand{\UnorderListEnd}{ \end{itemize} }
+
+% Math packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{bm}
+
+% Table packages
+\usepackage{booktabs}
+
+% ---- Callout box
+\usepackage[most, minted]{tcolorbox}
+\tcbset{
+	enhanced,
+	boxrule=0pt,
+	left=10pt,right=10pt,top=8pt,bottom=8pt,
+}
+
+\begin{document}
+\input{terms.tex}
+\input{expressions.tex}
+\end{document}

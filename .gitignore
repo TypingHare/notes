@@ -16,3 +16,4 @@ indent.log
 *.bbl
 *.blg
 *(busy)
+*.xdv
